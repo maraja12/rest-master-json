@@ -10,15 +10,21 @@ import java.util.Optional;
 
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
-    //find all unpaid invoices by certain company
-    @Query(value = "SELECT name, invoices.query('" +
-            "<Invoice>" +
-            "{/Invoices/Invoice[status=\"UNPAID\"]}" +
-            "</Invoice>') as InvoiceDetails " +
-            "FROM company " +
-            "WHERE name = :name " +
-            "AND invoices.exist('/Invoices/Invoice[status=\"UNPAID\"]') = 1",
+//    find all invoices for particular company and show company details like name, pib and email
+    @Query(value = "SELECT name, pib, email, invoices " +
+            "FROM Company " +
+            "WHERE pib = :pib ",
             nativeQuery = true)
-    Object findUnpaidInvoicesByCompany(@Param("name") String companyName);
+    Object findInvoicesByCompanyPib(@Param("pib") int companyPib);
+
+//    find all unpaid invoices for particular company and show company details like name, pib and email
+    @Query(value = "SELECT name, pib, email, " +
+            "(SELECT STRING_AGG(JSON_QUERY(value), ',') " +
+            "FROM OPENJSON(invoices) " +
+            "WHERE JSON_VALUE(value, '$.status') = 'UNPAID') AS unpaid_invoices " +
+            "FROM Company " +
+            "WHERE pib = :pib",
+            nativeQuery = true)
+    Object findUnpaidInvoicesByCompany(@Param("pib") int pib);
 
 }

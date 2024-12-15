@@ -12,5 +12,7 @@ public interface CompanyService {
     CompanyDto save(CompanyDto companyDto);
     CompanyDto update(CompanyDto companyDto) throws EntityNotFoundException;
     void delete(int id) throws EntityNotFoundException;
-    Object getUnpaidInvoicesByCompany(String companyName) throws EntityNotFoundException;
+    Object findInvoicesByCompanyPib(int pib) throws EntityNotFoundException;
+    Object getUnpaidInvoicesByCompany(int companyPib) throws EntityNotFoundException;
+
 }

@@ -40,13 +40,18 @@ public class CompanyController {
         return new ResponseEntity<>(companyDtoUpdated, HttpStatus.OK);
     }
     @DeleteMapping("/{pib}")
-    public ResponseEntity<String> delete(int pib){
+    public ResponseEntity<String> delete(@PathVariable int pib){
         companyService.delete(pib);
         return new ResponseEntity<>("Company with pib = " + pib + " is deleted", HttpStatus.OK);
     }
-    @GetMapping("/invoices/{company-name}")
-    public ResponseEntity<Object> getUnpaidInvoicesByCompany(@PathVariable("company-name") String companyName){
-        Object list = companyService.getUnpaidInvoicesByCompany(companyName);
+    @GetMapping("/invoices/pib/{company-pib}")
+    public ResponseEntity<Object> findInvoicesByCompanyPib(@PathVariable("company-pib") int pib){
+        Object details = companyService.findInvoicesByCompanyPib(pib);
+        return new ResponseEntity<>(details, HttpStatus.OK);
+    }
+    @GetMapping("/invoices/unpaid/pib/{company-pib}")
+    public ResponseEntity<Object> getUnpaidInvoicesByCompany(@PathVariable("company-pib") int pib){
+        Object list = companyService.getUnpaidInvoicesByCompany(pib);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }

@@ -5,6 +5,7 @@ import com.fon.rest_master.domain.Company;
 import com.fon.rest_master.dto.CompanyDto;
 import com.fon.rest_master.repository.CompanyRepository;
 import com.fon.rest_master.service.CompanyService;
+import com.fon.rest_master.service.ValidateInvoiceService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,14 @@ public class CompanyServiceImpl implements CompanyService {
 
     private CompanyRepository companyRepository;
     private CompanyConverter companyConverter;
+    private ValidateInvoiceService validateInvoiceService;
 
-    public CompanyServiceImpl(CompanyRepository companyRepository, CompanyConverter companyConverter) {
+    public CompanyServiceImpl(CompanyRepository companyRepository,
+                              CompanyConverter companyConverter,
+                              ValidateInvoiceService validateInvoiceService) {
         this.companyRepository = companyRepository;
         this.companyConverter = companyConverter;
+        this.validateInvoiceService = validateInvoiceService;
     }
 
     @Override
@@ -45,8 +50,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CompanyDto save(CompanyDto companyDto) {
         Company company = companyConverter.toEntity(companyDto);
-        company = companyRepository.save(company);
-        return companyConverter.toDto(company);
+        if(validateInvoiceService.validateInvoicesDocument(company.getInvoices())){
+            company = companyRepository.save(company);
+            return companyConverter.toDto(company);
+        }
+        return null;
     }
 
     @Override
@@ -80,7 +88,25 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Object getUnpaidInvoicesByCompany(String companyName) throws EntityNotFoundException {
-        return companyRepository.findUnpaidInvoicesByCompany(companyName);
+    public Object findInvoicesByCompanyPib(int pib) throws EntityNotFoundException {
+        Optional<Company> companyOpt = companyRepository.findById(pib);
+        if (companyOpt.isPresent()) {
+            return companyRepository.findInvoicesByCompanyPib(pib);
+        }
+        else{
+            throw new EntityNotFoundException("Company with pib = " + pib + " is not found");
+        }
     }
+
+    @Override
+    public Object getUnpaidInvoicesByCompany(int companyPib) throws EntityNotFoundException {
+        Optional<Company> companyOpt = companyRepository.findById(companyPib);
+        if (companyOpt.isPresent()) {
+            return companyRepository.findUnpaidInvoicesByCompany(companyPib);
+        }
+        else{
+            throw new EntityNotFoundException("Company with pib = " + companyPib + " is not found");
+        }
+    }
+
 }
