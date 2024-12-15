@@ -1,5 +1,6 @@
 package com.fon.rest_master.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,5 +35,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(SchemaNotFoundException.class)
+    public ResponseEntity<String> handleSchemaNotFoundException (SchemaNotFoundException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<String> handleJsonProcessingException (JsonProcessingException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(JsonValidationSchemaException.class)
+    public ResponseEntity<String> handleJsonValidationSchemaException (JsonValidationSchemaException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(JsonParsingException.class)
+    public ResponseEntity<String> handleJsonParsingException (JsonParsingException ex){
+        return new ResponseEntity<>("Invalid JSON input: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
 }
