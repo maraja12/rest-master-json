@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "Invoices": {
+      "type": "object",
+      "properties": {
+        "Invoice": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "issue_date", "status", "InvoiceItems"],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0
+              },
+              "issue_date": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",
+                "description": "Date in the format yyyy-MM-dd"
+              },
+              "payment_date": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",
+                "description": "Date in the format yyyy-MM-dd"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["PAID", "UNPAID"],
+                "maxLength": 10
+              },
+              "InvoiceItems": {
+                "type": "object",
+                "properties": {
+                  "InvoiceItem": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["seq_num", "price_per_hour"],
+                      "properties": {
+                        "seq_num": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0
+                        },
+                        "description": {
+                          "type": "string",
+                          "maxLength": 100
+                        },
+                        "price_per_hour": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "multipleOf": 0.01,
+                          "maximum": 999999999999999999.99
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
