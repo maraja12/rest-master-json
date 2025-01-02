@@ -20,7 +20,7 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
 //    find all unpaid invoices for particular company and show company details like name, pib and email
     @Query(value = "SELECT name, pib, email, " +
             "(SELECT STRING_AGG(JSON_QUERY(value), ',') " +
-            "FROM OPENJSON(invoices) " +
+            "FROM OPENJSON(invoices, '$.Invoices') " +
             "WHERE JSON_VALUE(value, '$.status') = 'UNPAID') AS unpaid_invoices " +
             "FROM Company " +
             "WHERE pib = :pib",
