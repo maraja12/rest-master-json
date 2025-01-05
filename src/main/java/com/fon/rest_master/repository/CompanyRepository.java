@@ -41,7 +41,7 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
     //find name of projects for certain company invoice
     @Query(value =
-            "SELECT c.name AS company_name, :invoice_id as invoice_id, " +
+            "SELECT c.name AS company_name, " +
             "STRING_AGG(p.name, ', ') AS project_names " +
             "FROM company c " +
             "CROSS APPLY OPENJSON(c.invoices, '$.Invoices') AS invoices_array " +
@@ -57,7 +57,7 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
     //find employees id, name and surname for certain company invoice
     @Query(value =
-            "SELECT c.name AS company_name, :invoice_id as invoice_id, " +
+            "SELECT c.name AS company_name, " +
             "STRING_AGG(concat('id: ', e.id, ' ', e.name, ' ', e.surname), ', ') AS employees " +
             "FROM company c " +
             "CROSS APPLY OPENJSON(c.invoices, '$.Invoices') AS invoices_array " +
