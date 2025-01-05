@@ -72,7 +72,7 @@ public class CompanyController {
             @PathVariable("company-pib") int pib,
             @PathVariable("invoice-id") Long invoiceId
     ){
-        Object list = companyService.findProjectsForCertainCompanyInvoice(pib, invoiceId);
+        Object list = companyService.findEmployeesForCertainCompanyInvoice(pib, invoiceId);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
     @GetMapping("/employee-role/{company-pib}/{invoice-id}/{seq-num}")
