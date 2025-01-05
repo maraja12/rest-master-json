@@ -38,4 +38,20 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
             "GROUP BY name, pib, email, invoices",
             nativeQuery = true)
     Object sumUnpaidInvoicesByCompany(@Param("pib") int pib);
+
+    //find name of projects for certain company invoice
+    @Query(value =
+            "SELECT c.name AS company_name, :invoice_id as invoice_id, " +
+            "STRING_AGG(p.name, ', ') AS project_names " +
+            "FROM company c " +
+            "CROSS APPLY OPENJSON(c.invoices, '$.Invoices') AS invoices_array " +
+            "CROSS APPLY OPENJSON(invoices_array.value, '$.InvoiceItems') AS items " +
+            "INNER JOIN project p ON " +
+            "CAST(JSON_VALUE(items.value, '$.project_id') AS BIGINT) = p.id " +
+            "WHERE JSON_VALUE(invoices_array.value, '$.id') = :invoice_id " +
+            "AND c.pib = :pib " +
+            "GROUP BY c.name;",
+            nativeQuery = true
+    )
+    Object findProjectsForCertainCompanyInvoice(@Param("pib") int pib, @Param("invoice_id") Long invoiceId);
 }

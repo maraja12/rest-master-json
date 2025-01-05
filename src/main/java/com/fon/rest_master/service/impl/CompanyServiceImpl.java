@@ -112,4 +112,15 @@ public class CompanyServiceImpl implements CompanyService {
         return companyRepository.sumUnpaidInvoicesByCompany(companyPib);
     }
 
+    @Override
+    public Object findProjectsForCertainCompanyInvoice(int pib, Long invoiceId) throws EntityNotFoundException {
+        doesCompanyExist(pib);
+        Object list =  companyRepository.findProjectsForCertainCompanyInvoice(pib, invoiceId);
+        if(list == null){
+            throw new EntityNotFoundException("Invoice with id = " + invoiceId +
+                    " for certain company = " + pib + " is not found");
+        }
+        return list;
+    }
+
 }
