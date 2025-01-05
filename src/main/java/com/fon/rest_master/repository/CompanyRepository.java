@@ -69,4 +69,24 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
             "GROUP BY c.name;",
             nativeQuery = true)
     Object findEmployeesForCertainCompanyInvoice(@Param("pib") int pib, @Param("invoice_id") Long invoiceId);
+
+    //find role of employee on project for certain company invoice (invoice item)
+    @Query(value =
+            "SELECT c.name AS company_name, " +
+            "e.project_id as project_id, " +
+            "e.employee_id as employee_id, " +
+            "STRING_AGG(e.role, ', ') AS employees " +
+            "FROM company c " +
+            "CROSS APPLY OPENJSON(c.invoices, '$.Invoices') AS invoices_array " +
+            "CROSS APPLY OPENJSON(invoices_array.value, '$.InvoiceItems') AS items " +
+            "INNER JOIN engagement e ON " +
+            "CAST(JSON_VALUE(items.value, '$.project_id') AS BIGINT) = e.project_id " +
+            "AND CAST(JSON_VALUE(items.value, '$.employee_id') AS BIGINT) = e.employee_id " +
+            "WHERE JSON_VALUE(invoices_array.value, '$.id') = :invoice_id " +
+            "AND JSON_VALUE(items.value, '$.seq_num') = :seq_num " +
+            "AND c.pib = :pib " +
+            "GROUP BY c.name, e.project_id, e.employee_id;",
+            nativeQuery = true)
+    Object findEmployeeRoleOnProjectForCompanyInvoiceItem(
+            @Param("pib") int pib, @Param("invoice_id") Long invoiceId, @Param("seq_num") int seqNum);
 }

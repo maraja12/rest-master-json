@@ -134,4 +134,15 @@ public class CompanyServiceImpl implements CompanyService {
         return list;
     }
 
+    @Override
+    public Object findEmployeeRoleOnProjectForCompanyInvoiceItem(int pib, Long invoiceId, int seqNum) throws EntityNotFoundException {
+        doesCompanyExist(pib);
+        Object list =  companyRepository.findEmployeeRoleOnProjectForCompanyInvoiceItem(pib, invoiceId, seqNum);
+        if(list == null){
+            throw new EntityNotFoundException("Invoice with id = " + invoiceId +
+                    " or seqNum = "+ seqNum + " for certain company = " + pib + " is not found");
+        }
+        return list;
+    }
+
 }
