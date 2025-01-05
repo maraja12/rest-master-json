@@ -54,4 +54,19 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
             nativeQuery = true
     )
     Object findProjectsForCertainCompanyInvoice(@Param("pib") int pib, @Param("invoice_id") Long invoiceId);
+
+    //find employees id, name and surname for certain company invoice
+    @Query(value =
+            "SELECT c.name AS company_name, :invoice_id as invoice_id, " +
+            "STRING_AGG(concat('id: ', e.id, ' ', e.name, ' ', e.surname), ', ') AS employees " +
+            "FROM company c " +
+            "CROSS APPLY OPENJSON(c.invoices, '$.Invoices') AS invoices_array " +
+            "CROSS APPLY OPENJSON(invoices_array.value, '$.InvoiceItems') AS items " +
+            "INNER JOIN employee e ON " +
+            "CAST(JSON_VALUE(items.value, '$.employee_id') AS BIGINT) = e.id " +
+            "WHERE JSON_VALUE(invoices_array.value, '$.id') = :invoice_id " +
+            "AND c.pib = :pib " +
+            "GROUP BY c.name;",
+            nativeQuery = true)
+    Object findEmployeesForCertainCompanyInvoice(@Param("pib") int pib, @Param("invoice_id") Long invoiceId);
 }

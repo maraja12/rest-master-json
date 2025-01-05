@@ -123,4 +123,15 @@ public class CompanyServiceImpl implements CompanyService {
         return list;
     }
 
+    @Override
+    public Object findEmployeesForCertainCompanyInvoice(int pib, Long invoiceId) throws EntityNotFoundException {
+        doesCompanyExist(pib);
+        Object list =  companyRepository.findEmployeesForCertainCompanyInvoice(pib, invoiceId);
+        if(list == null){
+            throw new EntityNotFoundException("Invoice with id = " + invoiceId +
+                    " for certain company = " + pib + " is not found");
+        }
+        return list;
+    }
+
 }
