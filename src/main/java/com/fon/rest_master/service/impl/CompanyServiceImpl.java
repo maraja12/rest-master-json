@@ -87,26 +87,29 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
-    @Override
-    public Object findInvoicesByCompanyPib(int pib) throws EntityNotFoundException {
+    public void doesCompanyExist(int pib){
         Optional<Company> companyOpt = companyRepository.findById(pib);
-        if (companyOpt.isPresent()) {
-            return companyRepository.findInvoicesByCompanyPib(pib);
-        }
-        else{
+        if (companyOpt.isEmpty()) {
             throw new EntityNotFoundException("Company with pib = " + pib + " is not found");
         }
     }
 
     @Override
+    public Object findInvoicesByCompanyPib(int pib) throws EntityNotFoundException {
+        doesCompanyExist(pib);
+        return companyRepository.findInvoicesByCompanyPib(pib);
+    }
+
+    @Override
     public Object getUnpaidInvoicesByCompany(int companyPib) throws EntityNotFoundException {
-        Optional<Company> companyOpt = companyRepository.findById(companyPib);
-        if (companyOpt.isPresent()) {
-            return companyRepository.findUnpaidInvoicesByCompany(companyPib);
-        }
-        else{
-            throw new EntityNotFoundException("Company with pib = " + companyPib + " is not found");
-        }
+        doesCompanyExist(companyPib);
+        return companyRepository.findUnpaidInvoicesByCompany(companyPib);
+    }
+
+    @Override
+    public Object sumUnpaidInvoicesByCompany(int companyPib) throws EntityNotFoundException {
+        doesCompanyExist(companyPib);
+        return companyRepository.sumUnpaidInvoicesByCompany(companyPib);
     }
 
 }
